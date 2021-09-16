@@ -1,11 +1,11 @@
-const Router = require('cloudworker-router')
+const Router = require('./src')
+const { response } = require('./helpers')
 
 const router = new Router()
 
 router.get('/', async (ctx) => {
-    ctx.response.headers = { 'Content-Type': 'application/json' }
-    ctx.body = JSON.stringify({ msg: 'test' })
-    ctx.status = 200
+    const data = { msg: 'test' }
+    response(ctx, data)
 })
 
 addEventListener('fetch', event => {
