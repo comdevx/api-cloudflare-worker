@@ -9,33 +9,33 @@ function parseRoute({
   headers = {},
   data,
 }) {
-  const hostVariables = [];
-  const pathVariables = [];
+  const hostVariables = []
+  const pathVariables = []
 
   const hostRegexpString = host
     // Replace any variables in the host
     .replace(/(:([^.]+))/g, ($1, $2, $3) => {
-      hostVariables.push($3);
-      return '([^.]+)';
-    });
+      hostVariables.push($3)
+      return '([^.]+)'
+    })
 
   // Then parse the variables in the path
   const pathRegexpString = path.replace(/(:([^/]+))/g, ($1, $2, $3) => {
     // Check for wildcard parameters
     if ($3.slice(-1) === '*') {
-      pathVariables.push($3.slice(0, $3.length - 1));
-      return '(.*)';
+      pathVariables.push($3.slice(0, $3.length - 1))
+      return '(.*)'
     }
 
-    pathVariables.push($3);
-    return '([^/]*)';
-  });
+    pathVariables.push($3)
+    return '([^/]*)'
+  })
 
-  const hostRegex = new RegExp(`^${hostRegexpString}$`, 'i');
-  const pathRegex = new RegExp(`^${pathRegexpString}$`, 'i');
-  const excludePathRegex = excludePath ? new RegExp(`^${excludePath}$`, 'i') : null;
-  const methodRegex = new RegExp(`^${method.join('|')}$`, 'i');
-  const protocolRegex = new RegExp(`^${protocol}$`, 'i');
+  const hostRegex = new RegExp(`^${hostRegexpString}$`, 'i')
+  const pathRegex = new RegExp(`^${pathRegexpString}$`, 'i')
+  const excludePathRegex = excludePath ? new RegExp(`^${excludePath}$`, 'i') : null
+  const methodRegex = new RegExp(`^${method.join('|')}$`, 'i')
+  const protocolRegex = new RegExp(`^${protocol}$`, 'i')
 
   return {
     hostVariables,
@@ -54,66 +54,66 @@ function parseRoute({
     handlerName,
     headers,
     data,
-  };
+  }
 }
 
 function instanceToJson(instance) {
   return [...instance].reduce((obj, item) => {
-    const prop = {};
+    const prop = {}
     // eslint-disable-next-line prefer-destructuring
-    prop[item[0]] = item[1];
-    return { ...obj, ...prop };
-  }, {});
+    prop[item[0]] = item[1]
+    return { ...obj, ...prop }
+  }, {})
 }
 
 async function streamToString(readable, maxSize = 1024 * 1024) {
-  const results = [];
-  const reader = readable.getReader();
+  const results = []
+  const reader = readable.getReader()
   // eslint-disable-next-line no-undef
-  const textDecoder = new TextDecoder();
-  let bytesCount = 0;
+  const textDecoder = new TextDecoder()
+  let bytesCount = 0
 
   while (maxSize && bytesCount < maxSize) {
     // eslint-disable-next-line no-await-in-loop
-    const { done, value } = await reader.read();
+    const { done, value } = await reader.read()
 
     if (done) {
-      break;
+      break
     }
 
-    bytesCount += value.byteLength;
-    results.push(textDecoder.decode(value));
+    bytesCount += value.byteLength
+    results.push(textDecoder.decode(value))
   }
 
-  const result = results.join('');
+  const result = results.join('')
   if (maxSize) {
-    return result.substring(0, maxSize);
+    return result.substring(0, maxSize)
   }
-  return result;
+  return result
 }
 
 function parseRequest(request) {
-  const url = new URL(request.url);
+  const url = new URL(request.url)
 
-  const query = instanceToJson(url.searchParams);
-  const headers = instanceToJson(request.headers);
+  const query = instanceToJson(url.searchParams)
+  const headers = instanceToJson(request.headers)
 
   if (headers.host) {
-    url.hostname = headers.host;
+    url.hostname = headers.host
   }
 
-  let bodyText;
-  let requestedBodyLength;
+  let bodyText
+  let requestedBodyLength
 
   async function getBodyText(maxSize) {
     if (requestedBodyLength >= maxSize) {
-      return bodyText.substring(0, maxSize);
+      return bodyText.substring(0, maxSize)
     }
 
-    const clonedRequest = request.clone();
-    bodyText = await streamToString(clonedRequest.body, maxSize);
+    const clonedRequest = request.clone()
+    bodyText = await streamToString(clonedRequest.body, maxSize)
 
-    return bodyText;
+    return bodyText
   }
 
   return {
@@ -131,11 +131,11 @@ function parseRequest(request) {
     querystring: url.search.slice(1),
     search: url.search,
     text: async (maxSize) => {
-      return getBodyText(maxSize);
+      return getBodyText(maxSize)
     },
-  };
+  }
 }
 module.exports = {
   parseRoute,
   parseRequest,
-};
+}

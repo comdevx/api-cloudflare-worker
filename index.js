@@ -5,7 +5,8 @@ const router = new Router()
 
 router.get('/', async (ctx) => {
     const data = { msg: 'test' }
-    response(ctx, data)
+    // response(ctx, data)
+    ctx.body = data
 })
 
 addEventListener('fetch', event => {

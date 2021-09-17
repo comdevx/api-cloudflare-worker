@@ -11,4 +11,4 @@ module.exports = {
     404: 'Not found',
     429: 'Rate limited',
   },
-};
+}

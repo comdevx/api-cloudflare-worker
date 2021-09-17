@@ -122,7 +122,7 @@ module.exports = class Router {
       await resolver.recurseRoutes(ctx, this.routes)
 
       // eslint-disable-next-line no-undef
-      return new Response(ctx.body, {
+      return new Response(JSON.stringify(ctx.body), {
         status: ctx.status,
         headers: ctx.response.headers,
       })

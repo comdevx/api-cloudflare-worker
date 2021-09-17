@@ -23,28 +23,6 @@ module.exports = class Context {
   header(key) {
     return this.request.headers[key]
   }
-
-  /**
-   * Set a status on the response
-   * @param {number} value
-   */
-  status(value) {
-    this.status = value
-  }
-
-  /**
-   * Set a json on the response
-   * @param {object} value
-   */
-  json(value) {
-    this.status = 200
-    this.response = {
-      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-    }
-
-    this.body = JSON.stringify(value)
-  }
-
   /**
    * Set a header on the response
    * @param {string} key
